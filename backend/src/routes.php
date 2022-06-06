@@ -27,7 +27,33 @@ return function (App $app) {
 
     $app->put('/update-product', function (Request $request, Response $response) {});
 
-    $app->delete('/delete-product/{id}', function (Request $request, Response $response) {});
+    $app->delete('/delete-product/{id}', function (Request $request, Response $response, $args) {
+        $id          = $args['id'];
+        $result      = false;;
+        $productoObj = $this->atlas
+            ->select(Producto::class)
+            ->whereEquals(['id' => $id])
+            ->fetchRecord();
+
+        if ($productoObj) {
+            $productoObj->modified = date('Y-m-d H:i:s');
+            $productoObj->estado   = 0;
+
+            try {
+                $this->atlas->update($productoObj);
+                $result = true;
+            } catch (\Throwable $th) {
+                echo $th->getMessage();
+            }
+        }
+
+        return $response->withJson([
+            'code'    => $result,
+            'message' => $result
+                ? 'Producto eliminado'
+                : 'Ha habido un error al intentar eliminar el producto',
+        ]); 
+    });
 
     $app->map(
         ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],

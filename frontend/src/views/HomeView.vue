@@ -76,7 +76,11 @@ export default {
     elimiar(id) {
       axios
         .delete(`/delete-product/${id}`)
-        .then((response) => console.log(response));
+        .then(({ data }) => {
+          if (data.code == 1) {
+            this.fetchProducts();
+          }
+        });
     },
   },
 };
