@@ -74,13 +74,11 @@ export default {
     editar() {},
 
     elimiar(id) {
-      axios
-        .delete(`/delete-product/${id}`)
-        .then(({ data }) => {
-          if (data.code == 1) {
-            this.fetchProducts();
-          }
-        });
+      axios.delete(`/delete-product/${id}`).then(({ data }) => {
+        if (data.code == 1) {
+          this.fetchProducts();
+        }
+      });
     },
   },
 };

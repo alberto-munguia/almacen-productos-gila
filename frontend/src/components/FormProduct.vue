@@ -117,7 +117,7 @@ export default {
         formData.append('nombre', this.nombre);
         formData.append('sku', this.sku);
         formData.append('marca', this.marca);
-        formData.append('costo', this.costo);
+        formData.append('precio', this.costo);
 
         axios
           .post('/create-product', formData, {
@@ -128,6 +128,7 @@ export default {
               this.$emit('product-created', true);
               this.clearForm();
               this.message = 'Se ha creado correctamente el producto';
+              this.isSuccess = true;
             } else {
               this.message = 'Ha habido un error al intentar crear el producto';
             }

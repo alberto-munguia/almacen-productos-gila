@@ -6,9 +6,9 @@ return [
         'determineRouteBeforeAppMiddleware' => true,
         'atlas' => [
             'pdo' => [
-                'mysql:dbname=gila;host=localhost',
-                'jmunguia',
-                'jMungu1A',
+                'mysql:dbname=DBNAME;host=localhost',
+                'USER',
+                'PASSWORD',
             ],
             'namespace' => 'DataSource',
             'directory' => dirname(__DIR__) . '/src/classes/DataSource',

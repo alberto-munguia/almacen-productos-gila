@@ -10,19 +10,43 @@ use DataSource\Producto\Producto;
 return function (App $app) {
     // Define app routes
     $app->get('/fetch-all', function (Request $request, Response $response) {
-        $productos = $this->atlas->select(Producto::class)->fetchRecordSet();
+        $productos = $this->atlas
+            ->select(Producto::class)
+            ->whereEquals(['estado' => 1])
+            ->fetchRecordSet();
 
         return $response->withJson($productos);
     });
 
     $app->post('/create-product', function (Request $request, Response $response) {
-        $params = $request->getParsedBody();
+        $params  = $request->getParsedBody();
+        $code    = 0;
+        $message = 'Ha habido un error al intentar crear el producto';
 
-        echo '<pre>';
-        print_r($params);
-        echo '</pre>';
-        
-        return $response->withJson([]);
+        $productoObj = $this->atlas->newRecord(Producto::class, [
+            'sku'      => $params['sku'],
+            'nombre'   => $params['nombre'],
+            'marca'    => $params['marca'],
+            'precio'   => $params['precio'],
+            'created'  => date('Y-m-d H:i:s'),
+            'modified' => date('Y-m-d H:i:s'),
+        ]);
+
+        try {
+            $this->atlas->insert($productoObj);
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+        }
+
+        if (!empty($productoObj->id)) {
+            $code = 1;
+            $message = 'Producto creado';
+        }
+
+        return $response->withJson([
+            'code'    => (int) $code,
+            'message' => $message,
+        ]);
     });
 
     $app->put('/update-product', function (Request $request, Response $response) {});
@@ -48,7 +72,7 @@ return function (App $app) {
         }
 
         return $response->withJson([
-            'code'    => $result,
+            'code'    => (int) $result,
             'message' => $result
                 ? 'Producto eliminado'
                 : 'Ha habido un error al intentar eliminar el producto',
